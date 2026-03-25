@@ -1,0 +1,309 @@
+<!-- register.html -->
+<form name="registerForm" ng-submit="vm.registerUser(registerForm)" novalidate autocomplete="off">
+    <!-- ── Credentials ── -->
+    <div class="section-label full-width">Account Credentials</div>
+
+    <!-- Username -->
+    <div class="mb-3">
+        <label class="form-label">Username <span class="text-danger">*</span></label>
+        <input class="form-control"
+               name="username"
+               ng-model="vm.model.userName"
+               ng-pattern="vm.patterns.username"
+               placeholder="Email or 10-digit number"
+               required>
+        <div class="field-error"
+             ng-show="registerForm.$submitted && registerForm.username.$error.required">
+            Username is required
+        </div>
+        <div class="field-error"
+             ng-show="registerForm.$submitted && registerForm.username.$error.pattern">
+            Enter valid email or 10-digit number
+        </div>
+
+    </div>
+
+    <!-- Password -->
+    <div class="mb-3">
+        <label class="form-label">
+            Password <span class="text-danger">*</span>
+        </label>
+
+        <input type="password"
+               class="form-control"
+               name="password"
+               ng-model="vm.model.password"
+               placeholder="Minimum 8 characters"
+               ng-minlength="8"
+               maxlength="50"
+               required>
+
+        <div class="field-error"
+             ng-show="registerForm.$submitted && registerForm.password.$error.required">
+            Password is required
+        </div>
+
+        <div class="field-error"
+             ng-show="registerForm.$submitted &&
+                  registerForm.password.$error.minlength &&
+                  !registerForm.password.$error.required">
+            Minimum 8 characters required
+        </div>
+    </div>
+
+    <!-- Confirm Password -->
+    <div class="mb-2">
+        <label class="form-label">Confirm Password <span class="text-danger">*</span></label>
+        <input type="password"
+               class="form-control"
+               name="confirmPassword"
+               ng-model="vm.model.confirmPassword"
+               placeholder="Re-enter password"
+               required>
+        <div class="field-error"
+             ng-show="registerForm.$submitted && registerForm.confirmPassword.$error.required">
+            Please confirm your password
+        </div>
+        <div class="field-error"
+             ng-show="registerForm.$submitted &&
+         !registerForm.confirmPassword.$error.required &&
+         vm.passwordMismatch()">
+            Passwords do not match
+        </div>
+    </div>
+
+    <!-- ── Personal Info ── -->
+    <div class="section-label full-width">Personal Information</div>
+
+    <!-- First & Last Name -->
+    <div class="row g-2 mb-3">
+        <div class="col-6">
+            <label class="form-label">First Name <span class="text-danger">*</span></label>
+            <input class="form-control"
+                   name="firstName"
+                   ng-model="vm.model.firstName"
+                   placeholder="First name"
+                   ng-minlength="3"
+                   required>
+            <div class="field-error" ng-show="registerForm.$submitted && registerForm.firstName.$error.required">
+                Required
+            </div>
+            <div class="field-error" ng-show="registerForm.$submitted && registerForm.firstName.$error.minlength">
+                First name must be at least 3 characters
+            </div>
+        </div>
+        <div class="col-6">
+            <label class="form-label">Last Name <span class="text-danger">*</span></label>
+            <input class="form-control"
+                   name="lastName"
+                   ng-model="vm.model.lastName"
+                   placeholder="Last name"
+                   required>
+            <div class="field-error"
+                 ng-show="registerForm.$submitted && registerForm.lastName.$error.required">
+                Required
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Display Name</label>
+        <input class="form-control"
+               name="displayName"
+               ng-model="vm.model.displayName"
+               placeholder="Display name">
+    </div>
+
+    <!-- Date of Birth -->
+    <div class="mb-3">
+        <label class="form-label">
+            Date of Birth <span class="text-danger">*</span>
+        </label>
+
+        <div class="dob-group">
+            <!-- Day -->
+            <select class="form-select"
+                    name="day"
+                    ng-model="vm.model.day"
+                    ng-options="d for d in vm.days"
+                    ng-change="vm.validateDOB()"
+                    required>
+                <option value="">DD</option>
+            </select>
+
+            <!-- Month -->
+            <select class="form-select"
+                    name="month"
+                    ng-model="vm.model.month"
+                    ng-options="m.value as m.name for m in vm.months"
+                    ng-change="vm.validateDOB()"
+                    required>
+                <option value="">MM</option>
+            </select>
+
+            <!-- Year -->
+            <select class="form-select"
+                    name="year"
+                    ng-model="vm.model.year"
+                    ng-options="y for y in vm.years"
+                    ng-change="vm.validateDOB()"
+                    required>
+                <option value="">YYYY</option>
+            </select>
+        </div>
+
+        <!-- Errors -->
+        <div class="field-error" ng-show="vm.dobError">{{ vm.dobError }}</div>
+        <div class="field-error" ng-show="vm.ageError">{{ vm.ageError }}</div>
+
+        <div class="field-error"
+             ng-show="registerForm.$submitted &&
+                  (registerForm.day.$error.required ||
+                   registerForm.month.$error.required ||
+                   registerForm.year.$error.required) &&
+                  !vm.dobError">
+            Date of birth is required
+        </div>
+    </div>
+
+    <!-- Age (auto-calculated, readonly) -->
+    <div class="mb-3 mt-2">
+        <label class="form-label">Age</label>
+        <input class="form-control"
+               ng-model="vm.model.age"
+               readonly
+               placeholder="Auto-calculated">
+    </div>
+
+    <!-- Gender -->
+    <div class="mb-3">
+        <label class="form-label">Gender <span class="text-danger">*</span></label>
+        <div class="radio-group">
+            <label>
+                <input type="radio" name="gender" ng-model="vm.model.gender" ng-value="true"> Male
+            </label>
+            <label>
+                <input type="radio" name="gender" ng-model="vm.model.gender" ng-value="false"> Female
+            </label>
+        </div>
+    </div>
+
+    <!-- ── Location ── -->
+    <div class="section-label full-width">Location</div>
+
+    <div class="mb-3">
+        <label class="form-label">Address <span class="text-danger">*</span></label>
+        <input class="form-control"
+               name="address"
+               ng-model="vm.model.address"
+               placeholder="Enter address"
+               ng-minlength="10"
+               required>
+        <div class="field-error" ng-show="registerForm.$submitted && registerForm.address.$error.required">
+            Address is required
+        </div>
+        <div class="field-error" ng-show="registerForm.$submitted && registerForm.address.$error.minlength">
+            Address must be at least 10 characters
+        </div>
+    </div>
+
+    <!-- State -->
+    <div class="mb-3">
+        <label class="form-label">State</label>
+        <select class="form-select"
+                name="state"
+                ng-model="vm.model.state"
+                ng-change="vm.loadCities()">
+            <option value="">Select state</option>
+            <option value="Kerala">Kerala</option>
+            <option value="Tamilnadu">Tamilnadu</option>
+            <option value="Karnataka">Karnataka</option>
+        </select>
+    </div>
+
+    <!-- City -->
+    <div class="mb-3">
+        <label class="form-label">City </label>
+        <select class="form-select"
+                name="city"
+                ng-model="vm.model.city"
+                ng-disabled="!vm.model.state">
+            <option value="">{{ vm.model.state ? 'Select city' : 'Select state first' }}</option>
+            <option ng-repeat="c in vm.cities" value="{{c}}">{{c}}</option>
+        </select>
+    </div>
+    <!-- zip code -->
+    <div class="mb-3">
+        <label class="form-label">Zip Code <span class="text-danger">*</span></label>
+        <input class="form-control"
+               name="zipCode"
+               ng-model="vm.model.zipCode"
+               placeholder="Zip code"
+               ng-pattern="/^[0-9]{6}$/"
+               required>
+        <div class="field-error" ng-show="registerForm.$submitted && registerForm.zipCode.$error.required">
+            Zip code is required
+        </div>
+        <div class="field-error" ng-show="registerForm.$submitted && registerForm.zipCode.$error.pattern">
+            Zip code must be exactly 6 digits
+        </div>
+    </div>
+
+    <!-- Phone -->
+
+    <div class="mb-3">
+        <label class="form-label">
+            Phone <span class="text-danger">*</span>
+        </label>
+
+        <input class="form-control"
+               name="phone"
+               ng-model="vm.model.phone"
+               ng-pattern="vm.patterns.phone"
+               maxlength="10"
+               placeholder="Enter 10-digit phone number"
+               required>
+
+        <div class="field-error"
+             ng-show="registerForm.$submitted && registerForm.phone.$error.required">
+            Phone number is required
+        </div>
+
+        <div class="field-error"
+             ng-show="registerForm.$submitted &&
+                  registerForm.phone.$error.pattern &&
+                  !registerForm.phone.$error.required">
+            Enter a valid 10-digit phone number
+        </div>
+    </div>
+
+    <!-- Mobile -->
+    <div class="mb-4">
+        <label class="form-label">Mobile</label>
+        <input class="form-control"
+               name="mobile"
+               ng-model="vm.model.mobile"
+               maxlength="10" />
+        <div class="field-error"
+             ng-show="registerForm.$submitted && registerForm.mobile.$error.pattern">
+            Enter valid 10-digit mobile number
+        </div>
+    </div>
+
+    <!-- Global error -->
+    <div class="alert alert-danger alert-auth mb-3" ng-if="vm.error">
+        {{ vm.error }}
+    </div>
+
+    <!-- Submit -->
+    <button class="btn-auth" type="submit" ng-disabled="vm.loading">
+        <span ng-if="!vm.loading">Create Account</span>
+        <span ng-if="vm.loading">Registering…</span>
+    </button>
+
+    <p class="text-center mt-3 mb-0" style="font-size:0.82rem; color:#64748b;">
+        Already have an account?
+        <a ui-sref="auth.login" style="color:#2563eb; font-weight:600;">Login</a>
+    </p>
+
+</form>

@@ -1,0 +1,150 @@
+
+<div class="dash-page">
+
+    <!-- ── Welcome banner ── -->
+    <div class="dash-welcome reveal" style="animation-delay:.05s">
+        <div class="welcome-left">
+            <p class="welcome-label">Good {{ vm.timeOfDay }},</p>
+            <h1 class="welcome-name">{{ vm.user.firstName || vm.user.userName }} 👋</h1>
+            <p class="welcome-sub">Here's what's happening with your account today.</p>
+        </div>
+        <div class="welcome-date">
+            <span class="date-day">{{ vm.today | date:'EEEE' }}</span>
+            <span class="date-full">{{ vm.today | date:'d MMM yyyy' }}</span>
+        </div>
+    </div>
+
+    <!-- ── Stat cards ── -->
+    <div class="stat-grid reveal" style="animation-delay:.12s">
+
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#eff6ff; color:#2563eb;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+            </div>
+            <div class="stat-body">
+                <span class="stat-label">Account Status</span>
+                <span class="stat-value">Active</span>
+            </div>
+            <span class="stat-badge badge-green">✓ Verified</span>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#f0fdf4; color:#16a34a;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+            </div>
+            <div class="stat-body">
+                <span class="stat-label">Member Since</span>
+                <span class="stat-value">{{ vm.memberSince }}</span>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#fff7ed; color:#ea580c;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+            </div>
+            <div class="stat-body">
+                <span class="stat-label">Location</span>
+                <span class="stat-value">{{ vm.user.city || '—' }}, {{ vm.user.state || '' }}</span>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#fdf4ff; color:#9333ea;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2" /><line x1="12" y1="18" x2="12.01" y2="18" /></svg>
+            </div>
+            <div class="stat-body">
+                <span class="stat-label">Phone</span>
+                <span class="stat-value">{{ vm.user.phone || '—' }}</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ── Main content grid ── -->
+    <div class="dash-grid reveal" style="animation-delay:.2s">
+
+        <!-- Profile summary card -->
+        <div class="dash-card profile-card">
+            <div class="card-header-row">
+                <h3 class="card-title">Profile Summary</h3>
+                <a ui-sref="app.profile" class="card-action">Edit →</a>
+            </div>
+            <div class="profile-summary">
+
+                <div class="avatar avatar-lg">
+                    <img ng-if="nav.user.profileImagePath" ng-src="{{vm.baseUrl + nav.user.profileImagePath}}" alt="Profile">
+                    <span ng-if="!nav.user.profileImagePath">{{ nav.initials }}</span>
+                </div>
+             <div>
+                    <div class="ps-name">{{ vm.user.firstName }} {{ vm.user.lastName }}</div>
+                    <div class="ps-username">@{{ vm.user.userName }}</div>
+                </div>
+            </div>
+            <div class="info-rows">
+                <div class="info-row">
+                    <span class="info-key">Gender</span>
+                    <span class="info-val">{{ vm.user.gender == '1' ? 'Male' : 'Female' }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-key">Age</span>
+                    <span class="info-val">{{ vm.user.age || '—' }} yrs</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-key">State</span>
+                    <span class="info-val">{{ vm.user.state || '—' }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-key">City</span>
+                    <span class="info-val">{{ vm.user.city || '—' }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-key">Phone</span>
+                    <span class="info-val">{{ vm.user.phone || '—' }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right column -->
+        <div class="dash-right-col">
+
+            <!-- Quick actions -->
+            <div class="dash-card">
+                <div class="card-header-row">
+                    <h3 class="card-title">Quick Actions</h3>
+                </div>
+                <div class="quick-actions">
+                    <a ui-sref="app.profile" class="qa-btn">
+                        <span class="qa-icon" style="background:#eff6ff;color:#2563eb;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
+                        </span>
+                        <span class="qa-label">Edit Profile</span>
+                    </a>
+                    <a ng-click="vm.logout()" class="qa-btn" style="cursor:pointer;">
+                        <span class="qa-icon" style="background:#fef2f2;color:#ef4444;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
+                        </span>
+                        <span class="qa-label">Logout</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Account details -->
+            <div class="dash-card">
+                <div class="card-header-row">
+                    <h3 class="card-title">Account Details</h3>
+                </div>
+                <div class="info-rows">
+                    <div class="info-row">
+                        <span class="info-key">Username</span>
+                        <span class="info-val mono">{{ vm.user.userName }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-key">Account type</span>
+                        <span class="info-val"><span class="badge-pill">Standard</span></span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

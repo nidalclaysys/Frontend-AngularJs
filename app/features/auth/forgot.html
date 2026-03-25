@@ -1,0 +1,39 @@
+<form name="forgotForm" ng-submit="vm.forgotPassword(forgotForm)" novalidate>
+
+    <h4 class="text-center mb-3">Reset Password</h4>
+
+    <div class="mb-3">
+        <label>Email *</label>
+        <input type="email"
+               name="email"
+               class="form-control"
+               ng-model="vm.model.email"
+               required>
+
+        <div class="text-danger small"
+             ng-show="forgotForm.$submitted && forgotForm.email.$invalid">
+            Valid email required
+        </div>
+    </div>
+
+    <div class="alert alert-success" ng-if="vm.success">
+        {{ vm.success }}
+    </div>
+
+    <div class="alert alert-danger" ng-if="vm.error">
+        {{ vm.error }}
+    </div>
+
+    <button type="submit"
+            class="btn btn-warning w-100"
+            ng-disabled="vm.loading">
+
+        <span ng-if="!vm.loading">Send Reset Link</span>
+        <span ng-if="vm.loading">Sending...</span>
+    </button>
+
+    <div class="text-center mt-3">
+        <a ui-sref="auth.login">Back to Login</a>
+    </div>
+
+</form>

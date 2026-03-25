@@ -1,0 +1,42 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500&display=swap');
+
+:root {
+    /* Colors */
+    --blue: #2563eb;
+    --blue-lt: #eff6ff;
+    --blue-dark: #1d4ed8;
+    --slate: #0f172a;
+    --body-bg: #f0f4f8;
+    --card-bg: #ffffff;
+    --border: #e2e8f0;
+    --muted: #64748b;
+    --red: #ef4444;
+    --red-lt: #fef2f2;
+    --green: #16a34a;
+    --green-lt: #f0fdf4;
+    /* Typography */
+    --font-body: 'DM Sans', sans-serif;
+    --font-head: 'Sora', sans-serif;
+    /* Layout */
+    --nav-h: 60px;
+    --radius: 14px;
+    --radius-sm: 8px;
+    --radius-pill: 999px;
+    /* Shadows */
+    --shadow-sm: 0 1px 4px rgba(0,0,0,.06);
+    --shadow-md: 0 4px 18px rgba(0,0,0,.07);
+    --shadow-lg: 0 8px 30px rgba(0,0,0,.10);
+}
+
+/* Base */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--body-bg);
+    font-family: var(--font-body);
+    margin: 0;
+    color: var(--slate);
+}

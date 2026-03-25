@@ -1,0 +1,64 @@
+<form name="loginForm" ng-submit="vm.loginUser(loginForm)" novalidate autocomplete="off">
+    <!-- Title -->
+    <div class="auth-header">
+        <h5>Welcome Back 👋</h5>
+        <p>Login to continue</p>
+    </div>
+
+    <!-- Username / Email -->
+    <div class="form-group">
+        <label class="form-label">Email / Username <span class="text-danger">*</span></label>
+        <input type="text"
+               name="username"
+               class="form-control"
+               ng-model="vm.model.userName"
+               placeholder="Enter username or email"
+               required>
+
+        <div class="field-error"
+             ng-show="loginForm.$submitted && loginForm.username.$error.required">
+            Username or email is required
+        </div>
+    </div>
+
+    <!-- Password -->
+    <div class="form-group">
+        <div class="label-row">
+            <label class="form-label">Password <span class="text-danger">*</span></label>
+            <a ui-sref="auth.forgot" class="forgot-link">Forgot?</a>
+        </div>
+
+        <div class="password-wrapper">
+            <input ng-attr-type="{{vm.showPassword ? 'text' : 'password'}}"
+                   name="password"
+                   class="form-control"
+                   ng-model="vm.model.password"
+                   placeholder="Enter your password"
+                   required>
+
+            <button type="button"
+                    class="toggle-password"
+                    ng-click="vm.togglePassword()">
+                <span ng-if="!vm.showPassword">👁</span>
+                <span ng-if="vm.showPassword">🙈</span>
+            </button>
+        </div>
+
+        <div class="field-error"
+             ng-show="loginForm.$submitted && loginForm.password.$error.required">
+            Password is required
+        </div>
+    </div>
+
+    <!-- Error -->
+    <div class="alert alert-danger alert-auth" ng-if="vm.error">
+        {{ vm.error }}
+    </div>
+
+    <!-- Button -->
+    <button type="submit" class="btn-auth" ng-disabled="vm.loading">
+        <span ng-if="!vm.loading">Login</span>
+        <span ng-if="vm.loading">Logging in…</span>
+    </button>
+
+</form>

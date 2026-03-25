@@ -1,0 +1,25 @@
+<!-- auth-wrapper.html -->
+<div class="auth-page d-flex align-items-center justify-content-center min-vh-100">
+    <div class="auth-card card shadow-sm p-4">
+
+        <!-- Brand -->
+        <div class="text-center mb-3">
+            <span class="brand-logo">⚡</span>
+            <h5 class="brand-name mt-1 mb-0">MyApp</h5>
+        </div>
+
+        <!-- Tabs -->
+        <ul class="nav nav-pills nav-justified auth-tabs mb-4">
+            <li class="nav-item">
+                <a class="nav-link" ui-sref="auth.login" ui-sref-active="active">Login</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" ui-sref="auth.register" ui-sref-active="active">Register</a>
+            </li>
+        </ul>
+
+        <!-- Dynamic View -->
+        <div ui-view></div>
+
+    </div>
+</div>

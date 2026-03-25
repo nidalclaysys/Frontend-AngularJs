@@ -1,0 +1,397 @@
+
+
+<div class="admin-page">
+
+    <div class="admin-header reveal" style="animation-delay:.04s">
+        <div>
+            <h1 class="admin-title">User Management</h1>
+            <p class="admin-subtitle">View, edit and remove user accounts</p>
+        </div>
+        <div class="admin-header-meta" ng-if="!vm.loading && !vm.loadError">
+            <span class="total-badge">{{ vm.users.length }} users</span>
+        </div>
+    </div>
+
+    <div class="toolbar reveal" style="animation-delay:.08s" ng-if="!vm.loading && !vm.loadError">
+        <div class="search-wrap">
+            <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input class="search-input"
+                   type="text"
+                   ng-model="vm.search"
+                   placeholder="Search by name, username or phone…">
+            <button class="search-clear" ng-if="vm.search" ng-click="vm.search = ''">✕</button>
+        </div>
+        <div class="filter-pills">
+            <button class="fpill" ng-class="{active: vm.filter === 'all'}" ng-click="vm.filter='all'">All</button>
+            <button class="fpill" ng-class="{active: vm.filter === 'active'}" ng-click="vm.filter='active'">Active</button>
+            <button class="fpill" ng-class="{active: vm.filter === 'inactive'}" ng-click="vm.filter='inactive'">Inactive</button>
+        </div>
+    </div>
+
+    <div class="admin-loading" ng-if="vm.loading">
+        <div class="spinner"></div>
+        <p>Loading users…</p>
+    </div>
+    <div class="alert alert-danger admin-alert" ng-if="vm.loadError && !vm.loading">
+        {{ vm.loadError }}
+        <button ng-click="vm.loadUsers()" class="retry-btn">Retry</button>
+    </div>
+
+
+    <div class="table-card reveal" style="animation-delay:.12s" ng-if="!vm.loading && !vm.loadError">
+
+        <div class="empty-state" ng-if="vm.users.length === 0">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+            <p>No users found</p>
+        </div>
+
+        <table class="user-table" ng-if="vm.users.length > 0">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th class="hide-sm">Username</th>
+                    <th class="hide-sm">Phone</th>
+                    <th class="hide-md">Role</th>
+                    <th>Status</th>
+                    <th class="th-actions">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="u in vm.users" class="user-row">
+
+                    <td class="td-user">
+                        <div class="user-cell">
+                            <div class="tbl-avatar">
+                                <img ng-if="u.profileImage"
+                                     ng-src="{{ vm.IMG_BASE + u.profileImage }}"
+                                     class="tbl-avatar-img"
+                                     ng-error="u._imgErr = true"
+                                     ng-show="!u._imgErr">
+                                <span ng-if="!u.profileImage || u._imgErr"
+                                      class="tbl-avatar-initials">
+                                    {{ vm.initials(u) }}
+                                </span>
+                            </div>
+                            <div class="user-name-col">
+                                <span class="u-fullname">{{ u.firstName }} {{ u.lastName }}</span>
+                                <span class="u-id">ID #{{ u.id }}</span>
+                            </div>
+                        </div>
+                    </td>
+
+                    <td class="hide-sm td-mono">{{ u.userName }}</td>
+                    <td class="hide-sm td-mono">{{ u.phone || '—' }}</td>
+                    <td class="hide-md">
+                        <span class="role-badge" ng-class="u.role === 'Admin' ? 'role-admin' : 'role-user'">
+                            {{ u.role }}
+                        </span>
+                    </td>
+                    <td>
+                        <label class="switch">
+                            <input type="checkbox"
+                                   ng-checked="u.isActive"
+                                   ng-click="vm.toggleStatus(u)"
+                                   ng-disabled="u._toggling">
+                            <span class="slider"></span>
+                        </label>
+
+                        <span class="status-text"
+                              ng-class="u.isActive ? 'text-success' : 'text-muted'">
+                            {{ u.isActive ? 'Active' : 'Inactive' }}
+                        </span>
+                    </td>
+
+                    <td class="td-actions">
+                        <button class="action-btn btn-view"
+                                ng-click="vm.openEdit(u)"
+                                title="Edit user"
+                                ng-disabled="vm.drawerLoading">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                            </svg>
+                        </button>
+                        <button class="action-btn btn-delete"
+                                ng-click="vm.confirmDelete(u)"
+                                title="Delete user">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                                <polyline points="3 6 5 6 21 6" />
+                                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                                <path d="M10 11v6M14 11v6" />
+                                <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+                            </svg>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+    <div class="modal-backdrop" ng-if="vm.deleteTarget" ng-click="vm.cancelDelete()"></div>
+    <div class="confirm-modal" ng-if="vm.deleteTarget">
+        <div class="modal-icon-wrap danger">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <polyline points="3 6 5 6 21 6" />
+                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                <path d="M10 11v6M14 11v6" />
+                <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+            </svg>
+        </div>
+        <h3 class="modal-title">Delete User</h3>
+        <p class="modal-body">
+            Are you sure you want to delete
+            <strong>{{ vm.deleteTarget.firstName }} {{ vm.deleteTarget.lastName }}</strong>?
+            This action cannot be undone.
+        </p>
+        <div class="alert alert-danger modal-err" ng-if="vm.deleteError">{{ vm.deleteError }}</div>
+        <div class="modal-actions">
+            <button class="btn-modal-cancel" ng-click="vm.cancelDelete()" ng-disabled="vm.deleting">Cancel</button>
+            <button class="btn-modal-danger" ng-click="vm.doDelete()" ng-disabled="vm.deleting">
+                <span ng-if="!vm.deleting">Delete</span>
+                <span ng-if="vm.deleting">Deleting…</span>
+            </button>
+        </div>
+    </div>
+
+
+    <div class="drawer-backdrop" ng-if="vm.drawerOpen" ng-click="vm.closeDrawer()"></div>
+
+    <div class="edit-drawer" ng-class="{'drawer-open': vm.drawerOpen}">
+
+        <div class="drawer-header">
+            <div>
+                <h2 class="drawer-title">Edit User</h2>
+                <p class="drawer-sub" ng-if="vm.drawerUser">
+                    ID #{{ vm.drawerUser.id }}
+                </p>
+            </div>
+            <button class="drawer-close" ng-click="vm.closeDrawer()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="drawer-loading" ng-if="vm.drawerLoading">
+            <div class="spinner"></div>
+            <p>Loading user data…</p>
+        </div>
+
+        <div class="alert alert-danger drawer-alert" ng-if="vm.drawerError && !vm.drawerLoading">
+            {{ vm.drawerError }}
+        </div>
+
+        <div class="drawer-body" ng-if="vm.drawerUser && !vm.drawerLoading">
+
+            <form name="vm.editForm" novalidate autocomplete="off">
+
+                <div class="drawer-avatar-wrap">
+                    <label for="adminImgInput"
+                           class="pf-avatar-ring"
+                           ng-class="{'img-uploading': vm.imgUploading}"
+                           title="Click to change photo"/>
+                        <div class="pf-avatar">
+                            <img ng-if="vm.imgPreview || vm.drawerUser.profileImagePath"
+                                 ng-src="{{ vm.imgPreview || (vm.IMG_BASE + vm.drawerUser.profileImagePath) }}"
+                                 class="pf-avatar-img"
+                                 ng-error="vm.drawerImgErr = true"
+                                 ng-show="!vm.drawerImgErr || vm.imgPreview">
+                            <span ng-if="(!vm.drawerUser.profileImagePath && !vm.imgPreview) || (vm.drawerImgErr && !vm.imgPreview)"
+                                  class="pf-avatar-initials">
+                                {{ vm.initials(vm.drawerUser) }}
+                            </span>
+                        </div>
+                        <div class="avatar-overlay">
+                            <svg ng-if="!vm.imgUploading" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" /><circle cx="12" cy="13" r="4" /></svg>
+                            <div ng-if="vm.imgUploading" class="spinner-sm"></div>
+                            <span>{{ vm.imgUploading ? '…' : 'Change' }}</span>
+                        </div>
+
+                    <input type="file"
+                           id="adminImgInput"
+                           accept=".jpg,.jpeg,.png"
+                           class="visually-hidden-input"
+                           ng-disabled="vm.imgUploading"
+                           ng-file-change="vm.onImgSelected($file)">
+
+                    <div class="drawer-img-info">
+                        <span class="drawer-uname">{{ vm.edit.firstName }} {{ vm.edit.lastName }}</span>
+                        <span class="drawer-id">@{{ vm.drawerUser.userName }}</span>
+                        <div class="img-error-msg sm" ng-if="vm.imgUploadError">{{ vm.imgUploadError }}</div>
+                        <div class="img-success-msg sm" ng-if="vm.imgUploadSuccess">Photo updated!</div>
+                        <span class="avatar-hint">JPG/PNG · Max 2 MB</span>
+                    </div>
+                </div>
+
+                <div class="alert alert-danger drawer-alert" ng-if="vm.saveError">{{ vm.saveError }}</div>
+
+                <div class="drawer-section">
+                    <div class="drawer-section-title">Personal</div>
+
+                    <div class="dw-row">
+                        <div class="dw-field">
+                            <label class="form-label">First Name <span class="req">*</span></label>
+                            <input class="form-control" name="firstName"
+                                   ng-model="vm.edit.firstName"
+                                   minlength="2" maxlength="50" required>
+                            <div class="field-error" ng-show="vm.editForm.$submitted && vm.editForm.firstName.$error.required">Required</div>
+                            <div class="field-error" ng-show="vm.editForm.$submitted && vm.editForm.firstName.$error.minlength">Min 2 chars</div>
+                        </div>
+                        <div class="dw-field">
+                            <label class="form-label">Last Name <span class="req">*</span></label>
+                            <input class="form-control" name="lastName"
+                                   ng-model="vm.edit.lastName"
+                                   minlength="2" maxlength="50" required>
+                            <div class="field-error" ng-show="vm.editForm.$submitted && vm.editForm.lastName.$error.required">Required</div>
+                        </div>
+                    </div>
+
+                    <div class="dw-field mt-2">
+                        <label class="form-label">Display Name <span class="req">*</span></label>
+                        <input class="form-control" name="displayName"
+                               ng-model="vm.edit.displayName"
+                               minlength="2" maxlength="100" required>
+                        <div class="field-error" ng-show="vm.editForm.$submitted && vm.editForm.displayName.$error.required">Required</div>
+                    </div>
+
+                    <!-- DOB -->
+                    <div class="dw-field mt-2">
+                        <label class="form-label">Date of Birth <span class="req">*</span></label>
+                        <div class="dob-row">
+                            <select class="form-select" name="dobDay"
+                                    ng-model="vm.edit.dobDay"
+                                    ng-options="d for d in vm.days"
+                                    ng-change="vm.validateDOB()" required>
+                                <option value="">DD</option>
+                            </select>
+                            <select class="form-select" name="dobMonth"
+                                    ng-model="vm.edit.dobMonth"
+                                    ng-options="m.value as m.name for m in vm.months"
+                                    ng-change="vm.validateDOB()" required>
+                                <option value="">MM</option>
+                            </select>
+                            <select class="form-select" name="dobYear"
+                                    ng-model="vm.edit.dobYear"
+                                    ng-options="y for y in vm.years"
+                                    ng-change="vm.validateDOB()" required>
+                                <option value="">YYYY</option>
+                            </select>
+                        </div>
+                        <div class="field-error" ng-show="vm.dobError">{{ vm.dobError }}</div>
+                        <div class="field-error" ng-show="vm.ageError">{{ vm.ageError }}</div>
+                    </div>
+
+                    <!-- Gender -->
+                    <div class="dw-field mt-2">
+                        <label class="form-label">Gender <span class="req">*</span></label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="gender" ng-model="vm.edit.gender" ng-value="true"> Male</label>
+                            <label><input type="radio" name="gender" ng-model="vm.edit.gender" ng-value="false"> Female</label>
+                        </div>
+                        <div class="field-error" ng-show="vm.editForm.$submitted && vm.edit.gender === undefined">Select gender</div>
+                    </div>
+                </div>
+
+                <!-- ── Contact ── -->
+                <div class="drawer-section">
+                    <div class="drawer-section-title">Contact</div>
+                    <div class="dw-row">
+                        <div class="dw-field">
+                            <label class="form-label">Phone <span class="req">*</span></label>
+                            <input class="form-control" name="phone"
+                                   ng-model="vm.edit.phone"
+                                   ng-pattern="/^[0-9]{10}$/"
+                                   maxlength="10" required>
+                            <div class="field-error" ng-show="vm.editForm.$submitted && vm.editForm.phone.$error.required">
+                                Required
+                            </div>
+                            <div class="field-error" ng-show="vm.editForm.$submitted && vm.editForm.phone.$error.pattern">
+                                10-digit number required
+                            </div>
+                        </div>
+
+                        <div class="dw-field">
+                            <label class="form-label">Mobile <span class="opt">(optional)</span></label>
+                            <input class="form-control" name="mobile"
+                                   ng-model="vm.edit.mobile"
+                                   ng-pattern="/^[0-9]{10}$/"
+                                   maxlength="10">
+                            <div class="field-error" ng-show="vm.editForm.$submitted && vm.editForm.mobile.$error.pattern && vm.edit.mobile">
+                                Must be 10 digits
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── Address ── -->
+                <div class="drawer-section">
+                    <div class="drawer-section-title">Address</div>
+
+                    <div class="dw-field">
+                        <label class="form-label">Street Address <span class="req">*</span></label>
+                        <input class="form-control" name="address"
+                               ng-model="vm.edit.address"
+                               minlength="10" maxlength="250" required>
+                        <div class="field-error" ng-show="vm.editForm.$submitted && vm.editForm.address.$error.required">Required</div>
+                        <div class="field-error" ng-show="vm.editForm.$submitted && vm.editForm.address.$error.minlength">Min 10 characters</div>
+                    </div>
+
+                    <div class="dw-row mt-2">
+                        <div class="dw-field">
+                            <label class="form-label">State <span class="req">*</span></label>
+                            <select class="form-select" name="state"
+                                    ng-model="vm.edit.state"
+                                    ng-change="vm.loadCities()" required>
+                                <option value="">Select</option>
+                                <option value="Kerala">Kerala</option>
+                                <option value="Tamilnadu">Tamilnadu</option>
+                                <option value="Karnataka">Karnataka</option>
+                            </select>
+                            <div class="field-error" ng-show="vm.editForm.$submitted && vm.editForm.state.$error.required">Required</div>
+                        </div>
+                        <div class="dw-field">
+                            <label class="form-label">City <span class="req">*</span></label>
+                            <select class="form-select" name="city"
+                                    ng-model="vm.edit.city"
+                                    ng-disabled="!vm.edit.state" required>
+                                <option value="">{{ vm.edit.state ? 'Select' : 'Pick state first' }}</option>
+                                <option ng-repeat="c in vm.cities" value="{{c}}">{{c}}</option>
+                            </select>
+                            <div class="field-error" ng-show="vm.editForm.$submitted && vm.editForm.city.$error.required">Required</div>
+                        </div>
+                    </div>
+
+                    <div class="dw-field mt-2">
+                        <label class="form-label">ZIP Code <span class="req">*</span></label>
+                        <input class="form-control" name="zipCode"
+                               ng-model="vm.edit.zipCode"
+                               ng-pattern="/^[0-9]{6}$/"
+                               maxlength="6" required>
+                        <div class="field-error" ng-show="vm.editForm.$submitted && vm.editForm.zipCode.$error.required">Required</div>
+                        <div class="field-error" ng-show="vm.editForm.$submitted && vm.editForm.zipCode.$error.pattern && !vm.editForm.zipCode.$error.required">6-digit ZIP</div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+        <div class="drawer-footer" ng-if="vm.drawerUser && !vm.drawerLoading">
+            <button class="btn-cancel" ng-click="vm.closeDrawer()" ng-disabled="vm.saving">Cancel</button>
+            <button class="btn-save" ng-click="vm.saveUser(vm.editForm)" ng-disabled="vm.saving">
+                <span ng-if="!vm.saving">Save Changes</span>
+                <span ng-if="vm.saving">Saving…</span>
+            </button>
+        </div>
+    </div>
+
+</div>

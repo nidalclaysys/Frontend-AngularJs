@@ -1,0 +1,134 @@
+<nav class="app-navbar" ng-class="{ 'nav-scrolled': nav.scrolled }">
+
+    <div class="nav-inner">
+
+        <a class="nav-brand" ui-sref="dashboard">
+            <span class="nav-brand-icon">⚡</span>
+            <span class="nav-brand-name">MyApp</span>
+        </a>
+
+
+        <ul class="nav-links" ng-class="{ 'nav-open': nav.menuOpen }">
+
+            <li>
+                <a ui-sref="dashboard"
+                   ui-sref-active="nav-active"
+                   ng-click="nav.toDashboard()">
+                    Dashboard
+                </a>
+            </li>
+
+            <li>
+                <a ui-sref="profile"
+                   ui-sref-active="nav-active"
+                   ng-click="nav.toProfile()">
+                    Profile
+                </a>
+            </li>
+
+            <li>
+                <a ui-sref="chat"
+                   ui-sref-active="nav-active"
+                   ng-click="nav.toChat()">
+                    Chat
+                </a>
+            </li>
+
+            <li class="mobile-logout">
+                <a ng-click="nav.logout()">Logout</a>
+            </li>
+
+        </ul>
+
+
+        <div class="nav-right">
+
+            <div class="profile-wrap" ng-class="{ 'open': nav.dropdownOpen }">
+
+                <button class="profile-btn"
+                        ng-click="nav.toggleDropdown($event)">
+
+                    <div class="avatar avatar-lg">
+                        <img ng-if="nav.user.profileImagePath"
+                             ng-src="{{ nav.baseUrl + nav.user.profileImagePath }}"
+                             alt="Profile" />
+
+                        <span ng-if="!nav.user.profileImagePath">
+                            {{ nav.initials }}
+                        </span>
+                    </div>
+
+                    <span class="profile-name">
+                        {{ nav.user.firstName || nav.user.userName }}
+                    </span>
+
+                    <span class="chevron">▾</span>
+                </button>
+
+
+                <div class="profile-dropdown"
+                     ng-show="nav.dropdownOpen"
+                     ng-click="$event.stopPropagation()">
+
+                    <div class="dropdown-header">
+                        <span class="avatar avatar-lg">
+                            {{ nav.initials }}
+                        </span>
+
+                        <div>
+                            <div class="dropdown-name">
+                                {{ nav.user.firstName }} {{ nav.user.lastName }}
+                            </div>
+                            <div class="dropdown-sub">
+                                {{ nav.user.userName }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dropdown-divider"></div>
+
+                    <a class="dropdown-item"
+                       ui-sref="profile"
+                       ng-click="nav.toProfile()">
+                        My Profile
+                    </a>
+
+                    <a class="dropdown-item"
+                       ui-sref="chat"
+                       ng-click="nav.closeDropdown()">
+                        Chat
+                    </a>
+
+                    <div class="dropdown-divider"></div>
+
+                    <a class="dropdown-item logout"
+                       ng-click="nav.logout()">
+                        Logout
+                    </a>
+                </div>
+            </div>
+
+
+            <button class="hamburger"
+                    ng-click="nav.toggleMenu($event)"
+                    ng-class="{ 'is-open': nav.menuOpen }">
+
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+        </div>
+    </div>
+</nav>
+
+
+<div class="nav-backdrop"
+     ng-if="nav.dropdownOpen || nav.menuOpen"
+     ng-click="nav.closeAll()">
+</div>
+
+
+<div class="shell-body">
+    <ui-view></ui-view>
+</div>

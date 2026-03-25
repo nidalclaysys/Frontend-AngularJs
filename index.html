@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head>
+    <title>AngularJS App</title>
+
+    <!-- Angular -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+
+    <!-- UI Router and Packages-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/1.0.29/angular-ui-router.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular-toastr/2.1.1/angular-toastr.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-toastr/2.1.1/angular-toastr.tpls.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="app/app.css">
+    <link rel="stylesheet" href="app/styles/variables.css" />
+    <link rel="stylesheet" href="app/shared/navbar/navbar.css" />
+    <link rel="stylesheet" href="app/features/auth/auth.css" />
+    <link rel="stylesheet" href="app/features/user/dashboard/dashboard.css" />
+    <link rel="stylesheet" href="app/features/user/profile/profile.css" />
+    <link rel="stylesheet" href="app/features/admin/users/admin.css" />
+    <link rel="stylesheet" href="app/features/user/chat/chat.css" />
+
+
+    <!-- Validations -->
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+
+    <div ui-view></div>
+
+    <!--  Core -->
+    <script src="app/core/core.module.js"></script>
+    <script src="app/features/auth/auth.module.js"></script>
+    <script src="app/shared/navbar/navbar.module.js"></script>
+    <script src="app/features/user/dashboard/dashboard.module.js"></script>
+    <script src="app/features/user/profile/profile.module.js"></script>
+    <script src="app/features/admin/users/admin-users.modules.js"></script>
+    <script src="app/features/user/chat/chat.module.js"></script>
+
+    <!--  MAIN APP -->
+    <script src="app/app.module.js"></script>
+
+    <!--  CONFIG / ROUTES -->
+    <script src="app/core/config.js"></script>
+    <script src="app/app.routes.js"></script>
+
+    <!--  SERVICES -->
+    <script src="app/core/api-service.js"></script>
+    <script src="app/core/auth-service.js"></script>
+    <script src="app/core/auth-interceptor.js"></script>
+    <script src="app/core/auth-guard-service.js"></script>
+    <script src="app/core/profile-service.js"></script>
+    <script src="app/core/admin-users-service.js"></script>
+    <script src="app/core/chat-service.js"></script>
+
+
+    <!--  CONTROLLERS -->
+    <script src="app/features/auth/auth-controller.js"></script>
+    <script src="app/shared/navbar/navbar-controller.js"></script>
+    <script src="app/features/user/dashboard/dashboard-controller.js"></script>
+    <script src="app/features/user/profile/profile-controller.js"></script>
+    <script src="app/shared/layout/shell-controller.js"></script>
+    <script src="app/features/admin/users/admin-users-controller.js"></script>
+    <script src="app/features/user/chat/chat-controller.js"></script>
+
+
+</body>
+</html>
