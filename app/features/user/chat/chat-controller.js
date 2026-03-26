@@ -74,17 +74,21 @@ angular.module('app.chat')
                 .withAutomaticReconnect()
                 .build();
 
-            hub.on('ReceiveMessage', (senderId, message) => {
+            hub.on('ReceiveMessage', (senderId, message, messageType, fileName) => {
                 safeApply(() => {
                     if (senderId === vm.myId) return;
+
                     addMessage({
                         sendId: senderId,
                         message: message,
+                        messageType: messageType,
+                        fileName: fileName,
+                        _isFile: messageType === 1,
                         isRead: false
                     });
 
                     vm.partnerTyping = false;
-                    updateSessionPreview(message);
+                    updateSessionPreview(message, messageType);
                 });
             });
 
@@ -201,30 +205,55 @@ angular.module('app.chat')
         }
 
         vm.canSend = function () {
+            const hasText = vm.messageText && vm.messageText.trim().length > 0;
+            const hasFile = !!vm.selectedFile; 
+            const isUploading = vm.fileUploading;
+
             return vm.hubConnected &&
                 vm.activeSession &&
-                vm.messageText.trim();
+                (hasText || hasFile) && 
+                !isUploading;
         };
 
         vm.sendMessage = function () {
-            if (!vm.canSend()) return;
+            if (!vm.activeSession || !vm.hubConnected) return;
 
-            const text = vm.messageText.trim();
+            const text = vm.messageText ? vm.messageText.trim() : '';
 
-            addMessage({
-                sendId: vm.myId,
-                message: text,
-                isRead: false
-            });
+            if (vm.selectedFile) {
+                vm.fileUploading = true;
+                const formData = new FormData();
+                formData.append('file', vm.selectedFile);
 
-            vm.messageText = '';
-            scrollToBottom();
+                ChatService.uploadFile(vm.activeSession.chatId, formData)
+                    .then(res => {
+                        const relativePath = res.data.data;
+                        const fileName = vm.selectedFile.name;
 
-            hub.invoke('SendMessage', vm.activeSession.chatId, vm.myId, text)
-                .catch(() => {
-                    vm.messages.pop(); // rollback
-                    vm.messageText = text;
-                });
+                        addMessage({
+                            sendId: vm.myId,
+                            message: relativePath,
+                            messageType: 1,
+                            fileName: fileName,
+                            _isFile: true
+                        });
+
+                        hub.invoke('SendMessage', vm.activeSession.chatId, vm.myId, relativePath, 1, fileName);
+
+                        vm.clearFile();
+                    })
+                    .catch(() => vm.fileUploadError = 'Upload failed')
+                    .finally(() => vm.fileUploading = false);
+
+                return; 
+            }
+
+            if (text) {
+                addMessage({ sendId: vm.myId, message: text, messageType: 0, isRead: false });
+                hub.invoke('SendMessage', vm.activeSession.chatId, vm.myId, text, 0, null);
+                vm.messageText = '';
+                scrollToBottom();
+            }
         };
 
         vm.onKeyDown = function (e) {
@@ -238,27 +267,48 @@ angular.module('app.chat')
         vm.onFileAttach = function (file) {
             if (!file || !vm.activeSession) return;
 
-            vm.fileUploading = true;
-            vm.fileUploadError = null;
+            safeApply(() => {
+                vm.selectedFile = file;
+                vm.fileUploadError = null;
+               
+            });
+        };
 
-            const formData = new FormData();
-            formData.append('File', file);
+        vm.filePreview = null;
 
-            ChatService.uploadFile(vm.activeSession.chatId, formData)
-                .then(res => {
-                    const url = res.data?.url || res.data;
+        vm.selectedFileName = ''; 
 
-                    addMessage({
-                        sendId: vm.myId,
-                        message: url,
-                        _isFile: true,
-                        _fileName: file.name
-                    });
+        vm.handleFilePreview = function (input) {
+            const file = input.files[0];
+            if (file) {
+                safeApply(() => {
+                    vm.selectedFile = file;
+                    vm.selectedFileName = file.name;
+                    vm.fileUploadError = null;
 
-                    hub.invoke('SendMessage', vm.activeSession.chatId, vm.myId, url);
-                })
-                .catch(() => vm.fileUploadError = 'Upload failed')
-                .finally(() => vm.fileUploading = false);
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            safeApply(() => {
+                                vm.filePreview = e.target.result;
+                            });
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        vm.filePreview = null;
+                    }
+                });
+            }
+        };
+
+        vm.clearFilePreview = function () {
+            vm.filePreview = null;
+            document.getElementById('chatFileInput').value = '';
+        };
+
+        vm.clearFile = function () {
+            vm.selectedFile = null;
+            document.getElementById('chatFileInput').value = "";
         };
 
  
@@ -321,7 +371,7 @@ angular.module('app.chat')
         }
 
         function isFile(msg) {
-            return /\.(pdf|doc|jpg|png|zip)/i.test(msg || '');
+            return /\.(pdf|doc|docx|xls|xlsx|jpg|jpeg|png|gif|zip|rar)/i.test(msg || '');
         }
 
         function getFileName(url) {
@@ -373,6 +423,68 @@ angular.module('app.chat')
             vm.activeSession = null;
         };
 
+        function formatMessage(m) {
+
+            m._isFile = (m.messageType === 1) || isFile(m.message);
+            m._fileName = m.fileName || (m._isFile ? getFileName(m.message) : null);
+
+            if (m._isFile && m.message) {
+
+                if (m.message.startsWith('/')) {
+                    m.displayUrl = vm.IMG_BASE + m.message;
+                } else if (!m.message.startsWith('http')) {
+
+                    m.displayUrl = vm.IMG_BASE + '/' + m.message;
+                } else {
+
+                    m.displayUrl = m.message;
+                }
+            } else {
+
+                m.displayUrl = m.message;
+            }
+
+            return m;
+        }
+
+        function updateSessionPreview(message, type) {
+            if (!vm.activeSession) return;
+
+            const session = vm.sessions.find(s => s.chatId === vm.activeSession.chatId);
+            if (session) {
+                const isActuallyFile = (type === 1) || isFile(message);
+                session._lastMessage = isActuallyFile ? '📎 Attachment' : message.slice(0, 40);
+            }
+        }
+
+        vm.downloadFile = function (url, fileName) {
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('File not found');
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+
+                    const blobUrl = window.URL.createObjectURL(blob);
+
+                    const link = document.createElement('a');
+                    link.href = blobUrl;
+                    link.download = fileName || 'download';
+
+                    document.body.appendChild(link);
+                    link.click();
+
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(blobUrl);
+                })
+                .catch(err => {
+                    console.error('Download failed:', err);
+
+                });
+        };
        
         $scope.$on('$destroy', function () {
             clearTimeout(searchTimer);

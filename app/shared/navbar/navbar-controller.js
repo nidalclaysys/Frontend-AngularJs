@@ -8,6 +8,10 @@ angular.module('app')
 
         nav.isAuthenticated = () => SessionService.isAuthenticated();
 
+
+        console.log(nav.isAdmin);
+
+
         function initUser() {
             nav.user = SessionService.getUserProfile() || {};
             nav.initials = buildInitials(nav.user);
@@ -72,7 +76,6 @@ angular.module('app')
             nav.menuOpen = false;
         };
 
-        // ── Logout ──
         nav.logout = function () {
             nav.closeAll();
             SessionService.logout();
@@ -80,8 +83,21 @@ angular.module('app')
 
         nav.toDashboard = function () {
             nav.closeAll();
-            $state.go('app.dashboard');
-        }
+
+            nav.isAdmin = SessionService.isAdmin();
+
+            if (nav.isAdmin) {
+
+                $state.go('app.adminDashboard');
+            } else {
+                $state.go('app.dashboard');
+            }
+        };
+
+        nav.isDashboardActive = function () {
+            return $state.includes('app.dashboard') || $state.includes('app.adminDashboard');
+        };
+
         nav.toProfile = function () {
             nav.closeAll();
             $state.go('app.profile');

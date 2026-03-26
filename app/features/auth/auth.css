@@ -1,9 +1,4 @@
-/* auth.css
-   Place in: app/auth/auth.css
-   Covers: .auth-page, .auth-card, auth nav tabs, form fields,
-           validation messages, auth buttons
-   Depends on: variables.css (load that first)
-   ─────────────────────────────────────────────────────────────── */
+
 
 /* ── Page shell ── */
 .auth-page {
@@ -110,6 +105,30 @@
         color: var(--muted);
     }
 
+.remember-me-container {
+    margin-top: -10px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.remember-me-container label {
+        font-size: .8125rem;
+        font-weight: 600;
+        color: #374151; 
+        cursor: pointer;
+        user-select: none;
+        margin: 0; 
+    }
+
+.remember-me-container input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        margin-right: 6px;
+        accent-color: var(--blue);
+}
+
+
 /* ── Validation error messages ── */
 .field-error {
     font-size: .775rem;
@@ -200,6 +219,29 @@
     border-radius: var(--radius-sm);
     font-size: .85rem;
     padding: .6rem .85rem;
+}
+
+.auth-footer-links {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.forgot-link-alt {
+    color: #6c757d; /* Muted gray */
+    font-size: 14px;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+    .forgot-link-alt:hover {
+        color: #007bff; /* Primary color on hover */
+        text-decoration: underline;
+    }
+
+/* Optional: If you want a separator line */
+.auth-footer-links {
+    border-top: 1px solid #eee;
+    padding-top: 15px;
 }
 
 /* ── Responsive ── */

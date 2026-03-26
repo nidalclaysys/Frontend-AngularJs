@@ -171,6 +171,7 @@ angular.module('app.admin')
                 })
                 .then(res => {
                     vm.drawerUser = res.data.data;
+                    vm.loadUsers();
                 })
                 .catch(err => {
                     vm.imgUploadError = err?.data?.message || 'Upload failed';
@@ -197,6 +198,22 @@ angular.module('app.admin')
                     toastr.error('Failed to update status');
                 })
                 .finally(() => user._toggling = false);
+        };
+
+
+
+        vm.confirmDelete = function (user) {
+            vm.deleteTarget = user;
+            vm.deleteError = null;
+            document.body.style.overflow = 'hidden';
+        };
+
+
+        vm.cancelDelete = function () {
+            if (vm.deleting) return;
+            vm.deleteTarget = null;
+            vm.deleteError = null;
+            document.body.style.overflow = '';
         };
         vm.openEdit = function (user) {
             vm.drawerOpen = true;
@@ -344,11 +361,16 @@ angular.module('app.admin')
 
             const { dobDay, dobMonth, dobYear } = vm.edit;
 
+
+            const dateString = dobYear + '-' +
+                String(dobMonth).padStart(2, '0') + '-' +
+                String(dobDay).padStart(2, '0');
+
             const payload = {
                 firstName: vm.edit.firstName.trim(),
                 lastName: vm.edit.lastName.trim(),
                 displayName: vm.edit.displayName.trim(),
-                dateOfBirth: new Date(dobYear, dobMonth - 1, dobDay).toISOString(),
+                dateOfBirth: dateString,
                 gender: vm.edit.gender,
                 address: vm.edit.address.trim(),
                 city: vm.edit.city,

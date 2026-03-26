@@ -1,5 +1,5 @@
 angular.module('app.auth')
-    .controller('AuthController', function (AuthService,SessionService,ProfileService, $state, toastr) {
+    .controller('AuthController', function (AuthService, SessionService, ProfileService, $state, $cookies, toastr) {
 
         const vm = this;
 
@@ -15,6 +15,13 @@ angular.module('app.auth')
         vm.ageError = '';
 
         const MIN_AGE = 13;
+
+        vm.model.rememberMe = false;
+        const savedUsername = $cookies.get('rememberedUsername');
+        if (savedUsername) {
+            vm.model.userName = savedUsername;
+            vm.model.rememberMe = true;
+        }
 
         vm.days = Array.from({ length: 31 }, (_, i) => i + 1);
 
@@ -98,6 +105,15 @@ angular.module('app.auth')
             vm.error = null;
             vm.loading = true;
 
+            if (vm.model.rememberMe) {
+
+                let now = new Date();
+                let expiryDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 30);
+                $cookies.put('rememberedUsername', vm.model.userName, { expires: expiryDate });
+            } else {
+                $cookies.remove('rememberedUsername');
+            }
+
             let loginData = null;
 
             AuthService.login(vm.model)
@@ -118,13 +134,16 @@ angular.module('app.auth')
                     if (profileRes && profileRes.data && profileRes.data.isSuccess) {
                         const profileData = profileRes.data.data;
                         profileData.userName = loginData.userName;
+                        
 
                         SessionService.saveUserProfile(profileData);
 
                         toastr.success('Welcome back, ' + (profileData.firstName || profileData.userName));
 
+                        $cookies.put("isAdmin", loginData.isAdmin.toString());
+
                         if (loginData.isAdmin) {
-                            $state.go('app.adminUsers');
+                            $state.go('app.adminDashboard');
                         } else {
                             $state.go('app.dashboard');
                         }

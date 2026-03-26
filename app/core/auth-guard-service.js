@@ -1,7 +1,7 @@
 
 angular.module('app')
 
-    .service('SessionService', function ($rootScope, $injector) {
+    .service('SessionService', function ($state, $rootScope, $cookies,$injector) {
 
         const USER_KEY = "user_profile";
         this.getUser = function () {
@@ -48,37 +48,45 @@ angular.module('app')
             return true;
         };
 
+        this.isAdmin = function () {
+            const isAdminCookie = $cookies.get("isAdmin");
+
+            return isAdminCookie === 'true';
+        };
+
         this.logout = function () {
-            localStorage.removeItem('token');
-            localStorage.removeItem(USER_KEY);
+
+            console.log("clicked logout")
+            localStorage.clear();
+
+            $state.go("auth.login");
 
             $rootScope.$emit('auth-changed');
-
-            try {
-                const $state = $injector.get('$state');
-                $state.go('auth.login');
-            } catch (e) {
-                console.warn("State navigation failed, falling back to window reload");
-                window.location.href = '/login'; // Hard fallback
-            }
         }
     })
 
 
-    .run(function ($transitions, $state, SessionService) {
-        const PROTECTED = ['app.dashboard', 'app.profile', 'app.settings','app.admin'];
-        const GUEST_ONLY = ['auth.login', 'auth.register', 'auth.forgot'];
+    .run(function ($transitions, $state, SessionService, toastr) {
 
         $transitions.onBefore({}, function (trans) {
-            const to = trans.to().name;
-            const auth = SessionService.isAuthenticated();
+            const toState = trans.to();
+            const isAuthenticated = SessionService.isAuthenticated();
+            const isAdmin = SessionService.isAdmin();
 
-            if (PROTECTED.includes(to) && !auth) {
+            if (toState.data && toState.data.requiresAuth && !isAuthenticated) {
+                toastr.warning("Please login to continue");
                 return trans.router.stateService.target('auth.login');
             }
 
-            if (GUEST_ONLY.includes(to) && auth) {
+            if (toState.data && toState.data.requiresAdmin && !isAdmin) {
+                toastr.error("Access Denied: Admins Only");
+
                 return trans.router.stateService.target('app.dashboard');
+            }
+
+            const guestOnly = ['auth.login', 'auth.register', 'auth.forgot'];
+            if (guestOnly.includes(toState.name) && isAuthenticated) {
+                return trans.router.stateService.target(isAdmin ? 'app.adminDashboard' : 'app.dashboard');
             }
         });
     });

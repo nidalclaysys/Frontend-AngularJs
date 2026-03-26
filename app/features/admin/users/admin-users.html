@@ -217,12 +217,12 @@
                             <span>{{ vm.imgUploading ? '…' : 'Change' }}</span>
                         </div>
 
-                    <input type="file"
-                           id="adminImgInput"
-                           accept=".jpg,.jpeg,.png"
-                           class="visually-hidden-input"
-                           ng-disabled="vm.imgUploading"
-                           ng-file-change="vm.onImgSelected($file)">
+                        <input type="file"
+                               id="adminImgInput"
+                               accept=".jpg,.jpeg,.png"
+                               class="visually-hidden-input"
+                               ng-disabled="vm.imgUploading"
+                               onchange="angular.element(this).scope().vm.onImgSelected(this.files[0])">
 
                     <div class="drawer-img-info">
                         <span class="drawer-uname">{{ vm.edit.firstName }} {{ vm.edit.lastName }}</span>

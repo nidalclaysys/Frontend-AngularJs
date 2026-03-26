@@ -1077,3 +1077,52 @@
         padding: .65rem 1rem;
     }
 }
+
+.chat-preview-box {
+    padding: 10px;
+    background: #f9f9f9;
+    border-top: 1px solid #eee;
+    display: flex;
+    align-items: center;
+}
+
+.preview-content {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    overflow: visible;
+    border: 1px solid #ddd;
+    background-color: #fff;
+}
+
+    .preview-content img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; 
+        border-radius: 6px;
+    }
+
+.preview-remove-btn {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 20px;
+    height: 20px;
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    transition: background 0.2s ease;
+}
+
+    .preview-remove-btn:hover {
+        background-color: #ff1a1a;
+    }

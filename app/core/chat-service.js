@@ -23,6 +23,6 @@ angular.module('app.chat')
 
    
         this.uploadFile = function (chatId, formData) {
-            return ApiService.postFormData('/chat/sessions/' + chatId + '/files', formData);
+            return ApiService.postFormData('/chat/file/' + chatId, formData);
         };
     });

@@ -2,7 +2,7 @@
 
     <div class="nav-inner">
 
-        <a class="nav-brand" ui-sref="dashboard">
+        <a class="nav-brand" ng-click="nav.toDashboard()" style="cursor:pointer">
             <span class="nav-brand-icon">⚡</span>
             <span class="nav-brand-name">MyApp</span>
         </a>
@@ -11,8 +11,8 @@
         <ul class="nav-links" ng-class="{ 'nav-open': nav.menuOpen }">
 
             <li>
-                <a ui-sref="dashboard"
-                   ui-sref-active="nav-active"
+                <a href=""
+                   ng-class="{ 'nav-active': nav.isDashboardActive() }"
                    ng-click="nav.toDashboard()">
                     Dashboard
                 </a>
@@ -87,21 +87,24 @@
 
                     <div class="dropdown-divider"></div>
 
-                    <a class="dropdown-item"
+                    <a href="" 
+                       class="dropdown-item"
                        ui-sref="profile"
                        ng-click="nav.toProfile()">
                         My Profile
                     </a>
 
-                    <a class="dropdown-item"
+                    <a href="" 
+                       class="dropdown-item"
                        ui-sref="chat"
-                       ng-click="nav.closeDropdown()">
+                       ng-click="nav.toChat()">
                         Chat
                     </a>
 
                     <div class="dropdown-divider"></div>
 
-                    <a class="dropdown-item logout"
+                    <a href="" 
+                       class="dropdown-item logout"
                        ng-click="nav.logout()">
                         Logout
                     </a>

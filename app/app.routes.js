@@ -52,15 +52,7 @@ angular.module('app')
                 templateUrl: 'app/features/user/chat/chat.html',
                 controller: 'ChatController as vm'
             })
-
-            .state('app.admin', {
-                url: '/admin',
-                abstract: true,
-                templateUrl: 'app/shared/layout/shell.html',
-                controller: 'NavbarController as shell',
-                data: { requiresAuth: true, requiresAdmin: true }
-            })
-            .state('app.adminUsers', {
+            .state('app.adminDashboard', {
                 url: '/admin/users',
                 templateUrl: 'app/features/admin/users/admin-users.html',
                 controller: 'AdminUsersController as vm',

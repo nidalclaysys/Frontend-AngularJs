@@ -109,11 +109,7 @@ angular.module('app.profile')
 
             const payload = {
                 ...vm.edit,
-                dateOfBirth: new Date(
-                    vm.edit.dobYear,
-                    vm.edit.dobMonth - 1,
-                    vm.edit.dobDay
-                ).toISOString(),
+                dateOfBirth: `${vm.edit.dobYear}-${String(vm.edit.dobMonth).padStart(2, '0')}-${String(vm.edit.dobDay).padStart(2, '0')}`,
                 zipCode: parseInt(vm.edit.zipCode, 10)
             };
 
@@ -156,7 +152,6 @@ angular.module('app.profile')
                 });
         }
 
-        // 1. Function to open the hidden file dialog
         vm.triggerFilePicker = function () {
             const fileInput = document.getElementById('profileImageInput');
             if (fileInput) {

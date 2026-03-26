@@ -25,7 +25,6 @@
     <div class="form-group">
         <div class="label-row">
             <label class="form-label">Password <span class="text-danger">*</span></label>
-            <a ui-sref="auth.forgot" class="forgot-link">Forgot?</a>
         </div>
 
         <div class="password-wrapper">
@@ -55,10 +54,26 @@
         {{ vm.error }}
     </div>
 
+    <!-- Remember me -->
+
+    <div class="form-group remember-me-container">
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox"
+                   class="custom-control-input"
+                   id="rememberMe"
+                   ng-model="vm.model.rememberMe">
+            <label class="custom-control-label" for="rememberMe">Remember me</label>
+        </div>
+    </div>
+
     <!-- Button -->
     <button type="submit" class="btn-auth" ng-disabled="vm.loading">
         <span ng-if="!vm.loading">Login</span>
         <span ng-if="vm.loading">Logging in…</span>
     </button>
+
+    <div class="auth-footer-links">
+        <a ui-sref="auth.forgot" class="forgot-link-alt">Forgot your password?</a>
+    </div>
 
 </form>

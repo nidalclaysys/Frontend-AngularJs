@@ -122,7 +122,7 @@
 /* ── Profile button ── */
 .profile-wrap {
     position: relative;
-    z-index: 1500; /* Higher than .nav-backdrop (1400) */
+    z-index: 1700; /* must be > backdrop */
 }
 
 .profile-btn {
@@ -173,7 +173,7 @@
     border-radius: 12px;
     box-shadow: var(--shadow-lg);
     padding: .5rem;
-    z-index: 1600; /* Already high, but ensure parent is high too */
+    z-index: 1600 !important;
     animation: dropIn .18s cubic-bezier(.22, .68, 0, 1.2) both;
 }
 
@@ -300,13 +300,7 @@
 
 /* ── Backdrop ── */
 .nav-backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 1400;
-    background: rgba(0,0,0,0.01); /* Make it slightly visible for testing */
+    display: none;
 }
 /* ── Mobile logout (hidden on desktop) ── */
 .mobile-logout {
@@ -338,7 +332,7 @@
         padding: .75rem 1rem 1rem;
         gap: .25rem;
         box-shadow: 0 8px 24px rgba(0,0,0,.08);
-        z-index: 998;
+        z-index: 1600 !important;
     }
     .nav-links.nav-open {
         display: flex;
