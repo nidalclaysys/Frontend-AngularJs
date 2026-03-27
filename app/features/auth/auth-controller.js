@@ -21,7 +21,6 @@ angular.module('app.auth')
         vm.nextStep = function (form) {
 
             if (!form) {
-                console.error("Form not passed ❌");
                 return;
             }
 
@@ -88,6 +87,13 @@ angular.module('app.auth')
         const currentYear = new Date().getFullYear();
         for (let y = currentYear; y >= 1900; y--) vm.years.push(y);
 
+
+        vm.patterns = {
+            username: /^(\d{10}|[^\s@]+@[^\s@]+\.[^\s@]+)$/,
+            phone: /^[0-9]{10}$/,
+
+            password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+        };
   
         vm.togglePassword = () => vm.showPassword = !vm.showPassword;
 
@@ -133,7 +139,6 @@ angular.module('app.auth')
         };
 
 
-
         vm.loadCities = function () {
             vm.model.city = '';  
             vm.cities = [];
@@ -143,11 +148,6 @@ angular.module('app.auth')
             AuthService.getCities(vm.model.state)
                 .then(res => vm.cities = res.data || [])
                 .catch(() => vm.cities = []);
-        };
-
-        vm.patterns = {
-            username: /^(\d{10}|[^\s@]+@[^\s@]+\.[^\s@]+)$/, 
-            phone: /^[0-9]{10}$/
         };
 
         vm.loginUser = function (form) {
@@ -211,9 +211,8 @@ angular.module('app.auth')
 
 
         vm.registerUser = function (form) {
-            console.log("Clicked");
 
-            form.$setSubmitted(); // trigger validation UI
+            form.$setSubmitted();
 
 
             if (vm.passwordMismatch()) {
@@ -226,7 +225,7 @@ angular.module('app.auth')
                 return;
             }
 
-            console.log("Passed validation ✅");
+          
 
             if (!vm.model.firstName || vm.model.firstName.length < 3) {
                 vm.error = "First name must be at least 3 characters";

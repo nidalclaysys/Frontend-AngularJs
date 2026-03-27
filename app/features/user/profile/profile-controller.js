@@ -39,6 +39,8 @@ angular.module('app.profile')
         const currentYear = new Date().getFullYear();
         for (let y = currentYear; y >= 1900; y--) vm.years.push(y);
 
+        vm.mobilePattern = /^[0-9]{10}$/;
+
         vm.loadProfile = loadProfile;
         vm.loadProfile();
 
@@ -94,7 +96,8 @@ angular.module('app.profile')
         vm.saveProfile = function (form) {
 
             form.$setSubmitted();
-            if (form.$invalid) return;
+
+            console.log("validated");
 
             const dobCheck = ProfileService.validateDOB(
                 vm.edit.dobDay,

@@ -21,14 +21,16 @@
             <input class="search-input"
                    type="text"
                    ng-model="vm.search"
-                   placeholder="Search by name, username or phone…">
-            <button class="search-clear" ng-if="vm.search" ng-click="vm.search = ''">✕</button>
+                   ng-change="vm.onSearchChange()"
+                   ng-keypress="$event.which === 13 && vm.searchUsers(vm.search)"
+                   placeholder="Search by name...">
+            <button class="search-clear" ng-if="vm.search" ng-click="vm.search = ''; vm.loadUsers()";>✕</button>
         </div>
-        <div class="filter-pills">
+        <!--<div class="filter-pills">
             <button class="fpill" ng-class="{active: vm.filter === 'all'}" ng-click="vm.filter='all'">All</button>
             <button class="fpill" ng-class="{active: vm.filter === 'active'}" ng-click="vm.filter='active'">Active</button>
             <button class="fpill" ng-class="{active: vm.filter === 'inactive'}" ng-click="vm.filter='inactive'">Inactive</button>
-        </div>
+        </div>-->
     </div>
 
     <div class="admin-loading" ng-if="vm.loading">

@@ -7,6 +7,11 @@ angular.module('app')
             return ApiService.get(`${BASE}/users`);
         };
 
+        this.getBySerachUsers = function (search) {
+            return ApiService.get(`${BASE}/users/${search}`);
+
+        }
+
         this.getUser = function (id) {
             return ApiService.get(`${BASE}/user/${id}`);
         };

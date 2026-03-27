@@ -358,17 +358,18 @@
                             </div>
                             <div class="edit-field">
                                 <label class="form-label">Mobile <span class="opt">(optional)</span></label>
-                                <input class="form-control" name="mobile"
+                                <input class="form-control"
+                                       name="mobile"
                                        ng-model="vm.edit.mobile"
                                        placeholder="10-digit mobile"
-                                       ng-pattern="vm.edit.mobile ? /^[0-9]{10}$/ : undefined"
+                                       ng-pattern="vm.mobilePattern"
                                        maxlength="10">
 
                                 <div class="field-error"
                                      ng-show="vm.editForm.$submitted && vm.editForm.mobile.$error.pattern">
                                     Enter valid 10-digit number
                                 </div>
-                               </div>
+                            </div>
                             </div>
                         </div>
 

@@ -48,9 +48,23 @@
         <!-- Password -->
         <div class="mb-3">
             <label class="form-label">Password *</label>
-            <input type="password" class="form-control" name="password"
-                   ng-model="vm.model.password"
-                   ng-minlength="8" required>
+
+            <div class="password-wrapper">
+                <input ng-attr-type="{{vm.showPassword ? 'text' : 'password'}}"
+                       class="form-control"
+                       name="password"
+                       ng-model="vm.model.password"
+                       ng-pattern="vm.patterns.password"
+                       placeholder="Enter your password"
+                       required>
+
+                <button type="button"
+                        class="toggle-password"
+                        ng-click="vm.togglePassword()">
+                    <span ng-if="!vm.showPassword">👁</span>
+                    <span ng-if="vm.showPassword">🙈</span>
+                </button>
+            </div>
 
             <div class="field-error"
                  ng-show="(registerForm.$submitted || registerForm.password.$touched) && registerForm.password.$error.required">
@@ -58,8 +72,8 @@
             </div>
 
             <div class="field-error"
-                 ng-show="(registerForm.$submitted || registerForm.password.$touched) && registerForm.password.$error.minlength">
-                Minimum 8 characters required
+                 ng-show="(registerForm.$submitted || registerForm.password.$touched) && registerForm.password.$error.pattern">
+                Password must be at least 8 characters long and include an uppercase letter, a number, and a special character.
             </div>
         </div>
 

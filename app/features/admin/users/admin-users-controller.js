@@ -35,6 +35,8 @@ angular.module('app.admin')
         const MIN_AGE = 13;
         const PHONE_RE = /^[0-9]{10}$/;
         const ZIP_RE = /^[0-9]{6}$/;
+        let searchTimeout;
+
 
         vm.days = Array.from({ length: 31 }, (_, i) => i + 1);
         vm.months = [
@@ -78,6 +80,45 @@ angular.module('app.admin')
         };
 
         vm.loadUsers();
+
+        vm.searchUsers = function (params) {
+            vm.loading = true;
+            vm.loadError = null;
+
+            const search = (params || "").trim();
+            if (search === "") {
+                return vm.loadUsers();
+            }   
+
+            AdminUsersService.getBySerachUsers(search)
+                .then(res => {
+                    if (res.data?.isSuccess === true) {
+                        vm.users = res.data.data || [];
+                    } else if (Array.isArray(res.data)) {
+                        vm.users = res.data;
+                    } else {
+                        vm.users = [];
+                        vm.loadError = res.data?.message || 'Failed to load users';
+                        toastr.error(vm.loadError);
+                    }
+                })
+                .catch(err => {
+                    vm.loadError = err?.data?.message || 'Failed to load users';
+                })
+                .finally(() => vm.loading = false);
+        }
+
+
+        vm.onSearchChange = function () {
+            if (searchTimeout) {
+                $timeout.cancel(searchTimeout);
+            }
+
+            searchTimeout = $timeout(() => {
+                vm.searchUsers(vm.search);
+            }, 300);
+        };
+
 
         vm.doDelete = function () {
             if (!vm.deleteTarget) return;
