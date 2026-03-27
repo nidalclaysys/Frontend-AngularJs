@@ -13,7 +13,7 @@
 /* ── Card ── */
 .auth-card {
     width: 100%;
-    max-width: 900px; /* ⬅️ increase from 480px */
+    max-width: 1000px;
     border-radius: var(--radius);
     border: 1px solid var(--border);
     background: var(--card-bg);
@@ -24,7 +24,7 @@
 .form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    gap: 20px 24px;
 }
 
 /* ── Brand inside card ── */
@@ -151,7 +151,7 @@
     text-transform: uppercase;
     letter-spacing: .8px;
     color: #94a3b8;
-    margin: 1rem 0 .75rem;
+    margin: 25px 0 20px;
     display: flex;
     align-items: center;
     gap: 8px;

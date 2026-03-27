@@ -16,8 +16,58 @@ angular.module('app.auth')
 
         const MIN_AGE = 13;
 
+        vm.currentStep = 1;
+
+        vm.nextStep = function (form) {
+
+            if (!form) {
+                console.error("Form not passed ❌");
+                return;
+            }
+
+            if (vm.currentStep === 1) {
+                if (form.username.$invalid ||
+                    form.password.$invalid ||
+                    form.confirmPassword.$invalid ||
+                    vm.passwordMismatch()) {
+
+                    form.$setSubmitted();
+                    return;
+                }
+            }
+
+            if (vm.currentStep === 2) {
+                if (form.firstName.$invalid ||
+                    form.lastName.$invalid ||
+                    form.day.$invalid ||
+                    form.month.$invalid ||
+                    form.year.$invalid ||
+                    vm.dobError || vm.ageError) {
+
+                    form.$setSubmitted();
+                    return;
+                }
+            }
+
+            vm.currentStep++;
+        };
+
+        vm.prevStep = function () {
+            console.log("Back clicked", vm.currentStep);
+
+            if (vm.currentStep > 1) {
+                vm.currentStep--;
+                window.scrollTo(0, 0);
+            }
+
+            console.log("After:", vm.currentStep);
+        };
+
+
         vm.model.rememberMe = false;
+
         const savedUsername = $cookies.get('rememberedUsername');
+
         if (savedUsername) {
             vm.model.userName = savedUsername;
             vm.model.rememberMe = true;
@@ -38,7 +88,7 @@ angular.module('app.auth')
         const currentYear = new Date().getFullYear();
         for (let y = currentYear; y >= 1900; y--) vm.years.push(y);
 
-
+  
         vm.togglePassword = () => vm.showPassword = !vm.showPassword;
 
         vm.passwordMismatch = () =>
@@ -161,12 +211,22 @@ angular.module('app.auth')
 
 
         vm.registerUser = function (form) {
+            console.log("Clicked");
 
-            let isValid = true;
+            form.$setSubmitted(); // trigger validation UI
 
-            if (form.$invalid || vm.passwordMismatch() || vm.dobError || vm.ageError) {
+
+            if (vm.passwordMismatch()) {
+                console.log("Password mismatch ❌");
                 return;
             }
+
+            if (vm.dobError || vm.ageError) {
+                console.log("DOB/Age issue ❌");
+                return;
+            }
+
+            console.log("Passed validation ✅");
 
             if (!vm.model.firstName || vm.model.firstName.length < 3) {
                 vm.error = "First name must be at least 3 characters";
@@ -194,7 +254,7 @@ angular.module('app.auth')
                 return;
             }
 
-            if (!vm.patterns.phone.test(vm.model.mobile)) {
+            if (vm.model.mobile && !vm.patterns.phone.test(vm.model.mobile)) {
                 vm.error = "Mobile must be a valid 10-digit number";
                 return;
             }
